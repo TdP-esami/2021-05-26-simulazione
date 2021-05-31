@@ -129,6 +129,10 @@ public class Business {
 			return false;
 		return true;
 	}
+	
+	public String toString() {
+		return this.businessName;
+	}
 
 	
 }

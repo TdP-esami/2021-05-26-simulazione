@@ -1,6 +1,7 @@
 package it.polito.tdp.yelp.model;
 
 import java.time.Year;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,9 @@ public class Model {
 	private Graph<Business, DefaultWeightedEdge> grafo ;
 	private List<Business> vertici ;
 	private Map<String, Business> verticiIdMap ;
+	
+	// variabili per la ricorsione
+	private List<Business> percorsoBest ;
 
 	
 	public List<String> getAllCities() {
@@ -93,6 +97,57 @@ public class Model {
 			}
 		}
 		return result; 
+	}
+	
+	public List<Business> percorsoMigliore(Business partenza, Business arrivo, double soglia) {
+		this.percorsoBest = null ;
+		
+		List<Business> parziale = new ArrayList<Business>() ;
+		parziale.add(partenza) ;
+		
+		cerca(parziale, 1, arrivo, soglia) ;
+		
+		return this.percorsoBest ;
+	}
+	
+	private void cerca(List<Business> parziale, int livello, Business arrivo, double soglia) {
+		
+		Business ultimo = parziale.get(parziale.size()-1) ;
+		
+		// caso terminale: ho trovato l'arrivo
+		if(ultimo.equals(arrivo)) {
+			if(this.percorsoBest==null) {
+				this.percorsoBest = new ArrayList<>(parziale) ;
+				return ;
+			} else if( parziale.size() < this.percorsoBest.size() ) {
+				// NOTA: per calcolare i percorsi più lunghi, basta
+				// mettere > nell'istuzione precedente
+				this.percorsoBest = new ArrayList<>(parziale) ;
+				return ;
+			} else {
+				return ;
+			}
+		}
+		
+		// generazione dei percorsi
+		// cerca i successori di 'ultimo'
+		for(DefaultWeightedEdge e: this.grafo.outgoingEdgesOf(ultimo)) {
+			if(this.grafo.getEdgeWeight(e)>soglia) {
+				// vai
+				
+				Business prossimo = Graphs.getOppositeVertex(this.grafo, e, ultimo) ;
+				
+				if(!parziale.contains(prossimo)) { // evita i cicli
+					parziale.add(prossimo);
+					cerca(parziale, livello + 1, arrivo, soglia);
+					parziale.remove(parziale.size()-1) ;
+				}
+			}
+		}	
+	}
+	
+	public List<Business> getVertici() {
+		return this.vertici ;
 	}
 	
 }
