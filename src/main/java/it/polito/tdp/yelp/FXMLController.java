@@ -8,6 +8,7 @@ import java.net.URL;
 import java.time.Year;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.yelp.model.Business;
 import it.polito.tdp.yelp.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -71,6 +72,10 @@ public class FXMLController {
 
     @FXML
     void doLocaleMigliore(ActionEvent event) {
+    	
+    	Business best = model.getLocaleMigliore() ;
+    	
+    	txtResult.appendText("Locale migliore: "+best.getBusinessName()+"\n");
 
     }
 
